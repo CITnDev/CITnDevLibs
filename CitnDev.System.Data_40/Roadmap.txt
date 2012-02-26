@@ -1,0 +1,9 @@
+﻿1.0.2.0:
+	* Improvements of DbCommandTrace interpreter that generates final SQL
+
+1.0.1.0:
+	* Use default DbProviderFactory if ODP.net provides it
+	* New ConnectionString prototype with timeout
+
+1.0.0.0:
+	* Oracle Provider Factory

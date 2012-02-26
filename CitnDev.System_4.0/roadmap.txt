@@ -1,0 +1,15 @@
+﻿//##########################################################
+//
+//  Author : Sebastien Curutchet
+//  Last release : 17 nov. 2011
+//  Company : CitnDev
+//
+//  Licensing : LGPL
+//
+//##########################################################
+
+
+
+
+1.0.0.0:
+	* AdvancedTrace : 1st release version
