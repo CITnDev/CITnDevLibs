@@ -108,11 +108,12 @@ namespace CitnDev.System
                     TraceAll.Add(traceListener);
                 }
             }
-
-
-            lock (Tracers[type])
+            else
             {
-                InternalAddListener(type, traceListener);
+                lock (Tracers[type])
+                {
+                    InternalAddListener(type, traceListener);
+                }
             }
         }
 
@@ -558,9 +559,9 @@ namespace CitnDev.System
 
             if (!Tracers[type].ContainsKey(listenerType))
             {
-                Tracers[type] = new Dictionary<Type, List<TraceListener>>();
-                Tracers[type][listenerType] = new List<TraceListener>();
+                Tracers[type].Add(listenerType, new List<TraceListener>());
             }
+
             Tracers[type][listenerType].Add(traceListener);
         }
 
