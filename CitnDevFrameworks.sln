@@ -11,11 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CitnDev.System.Data_40", "C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CitnDev.Pattern", "CitnDev.Pattern", "{24F17D88-1FF5-4FDF-BAAE-1B451A063250}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CitnDev.System_Test", "CitnDev.System_Test\CitnDev.System_Test.csproj", "{64185CB4-ECEF-4099-B5AC-DBE69308AA1A}"
+EndProject
 Global
-	GlobalSection(SubversionScc) = preSolution
-		Svn-Managed = True
-		Manager = AnkhSVN - Subversion Support for Visual Studio
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -29,12 +27,17 @@ Global
 		{E133937E-9497-4930-B64C-6735BF792297}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E133937E-9497-4930-B64C-6735BF792297}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E133937E-9497-4930-B64C-6735BF792297}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64185CB4-ECEF-4099-B5AC-DBE69308AA1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64185CB4-ECEF-4099-B5AC-DBE69308AA1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64185CB4-ECEF-4099-B5AC-DBE69308AA1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64185CB4-ECEF-4099-B5AC-DBE69308AA1A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{08A0EC00-2629-47C3-AC89-5203896CB0CC} = {45C6DA02-39A9-48D2-A80C-F4BB80A877F0}
+		{64185CB4-ECEF-4099-B5AC-DBE69308AA1A} = {45C6DA02-39A9-48D2-A80C-F4BB80A877F0}
 		{E133937E-9497-4930-B64C-6735BF792297} = {70DACCF2-156B-41B3-9D2F-3D7673375051}
 	EndGlobalSection
 EndGlobal

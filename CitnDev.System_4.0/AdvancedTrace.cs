@@ -1,12 +1,13 @@
 ﻿//##########################################################
 //
 //  Author : Sebastien Curutchet
-//  Last release : 17 nov. 2011
+//  Last release : Feb. 28,  2012
 //  Company : CitnDev
 //
 //  Licensing : LGPL
 //
 //  History :
+//      * 20120228 : fix hot add/remove trace type
 //      * 20111117 : 1st release version
 //
 //##########################################################
@@ -23,8 +24,8 @@ namespace CitnDev.System
     // The main static helper class
     public sealed class AdvancedTrace
     {
-        private static readonly Dictionary<string, Dictionary<Type, List<TraceListener>>> Includes;
-        private static readonly Dictionary<string, Dictionary<Type, List<TraceListener>>> Excludes;
+        private static readonly Dictionary<string, Dictionary<Type, List<TraceListener>>> Tracers;
+        private static readonly List<TraceListener> TraceAll;
 
         public class ListenerType
         {
@@ -43,8 +44,8 @@ namespace CitnDev.System
 
         static AdvancedTrace()
         {
-            Includes = new Dictionary<string, Dictionary<Type, List<TraceListener>>>();
-            Excludes = new Dictionary<string, Dictionary<Type, List<TraceListener>>>();
+            Tracers = new Dictionary<string, Dictionary<Type, List<TraceListener>>>();
+            TraceAll = new List<TraceListener>();
 
             AddTraceType(ListenerType.All);
             AddTraceType(ListenerType.Information);
@@ -64,64 +65,95 @@ namespace CitnDev.System
         /// <summary>
         /// Add a trace type
         /// </summary>
-        /// <param name="pstrType">String that represents the type</param>
-        public static void AddTraceType(string pstrType)
+        /// <param name="type">String that represents the type</param>
+        public static void AddTraceType(string type)
         {
-            lock (Includes)
+            if (type == ListenerType.All)
+                return;
+
+            lock (Tracers)
             {
-                if (!Includes.ContainsKey(pstrType))
-                    Includes[pstrType] = new Dictionary<Type, List<TraceListener>>();
+                if (!Tracers.ContainsKey(type))
+                    Tracers[type] = new Dictionary<Type, List<TraceListener>>();
             }
 
-            lock (Excludes)
+            lock (Tracers[type])
             {
-                if (!Excludes.ContainsKey(pstrType))
-                    Excludes[pstrType] = new Dictionary<Type, List<TraceListener>>();
+                lock (TraceAll)
+                {
+                    foreach (var listener in TraceAll)
+                    {
+                        InternalAddListener(type, listener);
+                    }
+                }
             }
+
         }
 
         // Add a TraceListener to a type
-        public static void AddTraceListener(string pstrType, TraceListener poTraceListener)
+        public static void AddTraceListener(string type, TraceListener traceListener)
         {
-            lock (Includes[pstrType])
+            if (type == ListenerType.All)
             {
-                if (!Includes[pstrType].ContainsKey(poTraceListener.GetType()))
-                    Includes[pstrType][poTraceListener.GetType()] = new List<TraceListener>();
+                lock (Tracers)
+                {
+                    foreach (var tracerKey in Tracers.Keys)
+                    {
+                        InternalAddListener(tracerKey, traceListener);
+                    }
+                }
+
+                lock (TraceAll)
+                {
+                    TraceAll.Add(traceListener);
+                }
             }
 
-            lock (Includes[pstrType][poTraceListener.GetType()])
-                Includes[pstrType][poTraceListener.GetType()].Add(poTraceListener);
+
+            lock (Tracers[type])
+            {
+                InternalAddListener(type, traceListener);
+            }
         }
 
         // Remove a TraceListener from a type
-        public static void RemoveTraceListener(string pstrType, TraceListener poTraceListener)
+        public static void RemoveTraceListener(string type, TraceListener traceListener)
         {
-            List<TraceListener> listeners = null;
-            lock (Includes[pstrType])
-                if (Includes[pstrType].ContainsKey(poTraceListener.GetType()))
-                    listeners = Includes[pstrType][poTraceListener.GetType()];
-
-            if (listeners != null && listeners.AsParallel().Contains(poTraceListener))
-                lock (Includes[pstrType][poTraceListener.GetType()])
-                    Includes[pstrType][poTraceListener.GetType()].Remove(poTraceListener);
-
-            lock (Excludes[pstrType])
-                if (!Excludes[pstrType].ContainsKey(poTraceListener.GetType()))
-                    Excludes[pstrType][poTraceListener.GetType()] = new List<TraceListener>();
-
-            lock (Excludes[pstrType][poTraceListener.GetType()])
-                Excludes[pstrType][poTraceListener.GetType()].Add(poTraceListener);
+            var listenerType = traceListener.GetType();
+            if (type == ListenerType.All)
+            {
+                lock (TraceAll)
+                {
+                    TraceAll.Remove(traceListener);
+                }
+                lock (Tracers)
+                {
+                    foreach (var tracerKey in Tracers.Keys)
+                    {
+                        lock (Tracers[tracerKey])
+                        {
+                            Tracers[tracerKey][listenerType].Remove(traceListener);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                lock (Tracers[type])
+                {
+                    Tracers[type][listenerType].Remove(traceListener);
+                }
+            }
         }
 
         // Remove a TraceListener from a type
         public static void RemoveAllTraceListener()
         {
-            lock (Includes)
-                Includes.Values.AsParallel().ForAll(dict => dict.Clear());
-
-            lock (Excludes)
-                Excludes.Values.AsParallel().ForAll(dict => dict.Clear());
-        }
+            lock(Tracers)
+            {
+                Tracers.Clear();
+            }
+            }
 
         #endregion
 
@@ -278,8 +310,10 @@ namespace CitnDev.System
 
         public static void Flush()
         {
-            lock (Includes)
-                Includes.SelectMany(trace => trace.Value).SelectMany(type => type.Value).AsParallel().ForAll(listener => listener.Flush());
+            lock (Tracers)
+            {
+                Tracers.SelectMany(type => type.Value).SelectMany(listenerType => listenerType.Value).AsParallel().ForAll(listener => listener.Flush());
+            }
         }
 
         #endregion
@@ -510,29 +544,26 @@ namespace CitnDev.System
 
         private static void CommonWrite(string pstrType, Action<TraceListener> traceAction)
         {
-            if (Includes.ContainsKey(pstrType))
+            if (Tracers.ContainsKey(pstrType))
             {
                 // Trace listeners added to Information type
-                lock (Includes[pstrType])
-                    Includes[pstrType].AsParallel().ForAll(dict => dict.Value.ForEach(traceAction));
+                lock (Tracers[pstrType])
+                    Tracers[pstrType].AsParallel().ForAll(dict => dict.Value.ForEach(traceAction));
             }
-
-            // Trace listeners added to All type
-            List<TraceListener> excludes;
-            if (Excludes.ContainsKey(pstrType))
-            {
-                lock (Excludes[pstrType])
-                    excludes = Excludes[pstrType].SelectMany(type => type.Value).ToList();
-            }
-            else
-                excludes = new List<TraceListener>();
-
-
-            List<TraceListener> includesAll;
-            lock (Includes[ListenerType.All])
-                includesAll = Includes[ListenerType.All].SelectMany(type => type.Value).ToList();
-            includesAll.Except(excludes).AsParallel().ForAll(traceAction);
         }
+
+        private static void InternalAddListener(string type, TraceListener traceListener)
+        {
+            var listenerType = traceListener.GetType();
+
+            if (!Tracers[type].ContainsKey(listenerType))
+            {
+                Tracers[type] = new Dictionary<Type, List<TraceListener>>();
+                Tracers[type][listenerType] = new List<TraceListener>();
+            }
+            Tracers[type][listenerType].Add(traceListener);
+        }
+
     }
 
     // Our base implementation of the TraceListener -> Used to build custom listener
