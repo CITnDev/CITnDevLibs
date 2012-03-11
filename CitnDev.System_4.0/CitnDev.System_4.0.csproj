@@ -8,7 +8,7 @@
     <ProjectGuid>{08A0EC00-2629-47C3-AC89-5203896CB0CC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CitnDev.System_4._0</RootNamespace>
+    <RootNamespace>CitnDev.System</RootNamespace>
     <AssemblyName>CitnDev.System_4.0</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -41,11 +41,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdvancedTrace.cs" />
+    <Compile Include="IO\File.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="roadmap.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

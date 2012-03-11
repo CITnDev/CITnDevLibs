@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -19,7 +20,29 @@ namespace CitnDev.System.Data
             Debug.WriteLine("Running assembly mscorlib version : " + oVersionMscorlib);
             Array.Clear(oAssemblyArray, 0, oAssemblyArray.Length);
 // ReSharper disable AssignNullToNotNullAttribute
-            var oGacList = new[] { new DirectoryInfo(Path.Combine(Environment.GetEnvironmentVariable("windir"), @"assembly\GAC\" + pstrAssemblyName)), new DirectoryInfo(Path.Combine(Environment.GetEnvironmentVariable("windir"), @"assembly\GAC_32\" + pstrAssemblyName)), new DirectoryInfo(Path.Combine(Environment.GetEnvironmentVariable("windir"), @"assembly\GAC_64\" + pstrAssemblyName)), new DirectoryInfo(Path.Combine(Environment.GetEnvironmentVariable("windir"), @"assembly\NativeImages_v2.0.50727_32\" + pstrAssemblyName)), new DirectoryInfo(Path.Combine(Environment.GetEnvironmentVariable("windir"), @"assembly\NativeImages_v2.0.50727_64\" + pstrAssemblyName)), new DirectoryInfo(Path.Combine(Environment.GetEnvironmentVariable("windir"), @"assembly\NativeImages_v4.0.30319_32\" + pstrAssemblyName)), new DirectoryInfo(Path.Combine(Environment.GetEnvironmentVariable("windir"), @"assembly\NativeImages_v4.0.30319_64\" + pstrAssemblyName)) };
+            var anyCPUXp = 
+                new DirectoryInfo(Path.Combine(Environment.GetEnvironmentVariable("windir"), @"assembly\GAC\" + pstrAssemblyName));
+            var anyCPUW7 =
+                new DirectoryInfo(Path.Combine(Environment.GetEnvironmentVariable("windir"), @"assembly\GAC_MSIL\" + pstrAssemblyName));
+            var x86 =
+                new DirectoryInfo(Path.Combine(Environment.GetEnvironmentVariable("windir"), @"assembly\GAC_32\" + pstrAssemblyName));
+            var x64 =
+                new DirectoryInfo(Path.Combine(Environment.GetEnvironmentVariable("windir"), @"assembly\GAC_64\" + pstrAssemblyName))
+                ;
+            var oGacList = new List<DirectoryInfo>(new[] {anyCPUW7, anyCPUXp}); 
+            
+            switch(IntPtr.Size)
+            {
+                case 4:
+                    oGacList.Add(x86);
+                    break;
+                case 8:
+                    oGacList.Add(x64);
+                    break;
+                default:
+                    throw new PlatformNotSupportedException();
+            }
+            
 // ReSharper restore AssignNullToNotNullAttribute
             try
             {
