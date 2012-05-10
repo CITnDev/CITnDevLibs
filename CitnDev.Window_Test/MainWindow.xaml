@@ -1,0 +1,33 @@
+﻿<Window x:Class="CitnDev.Windows_Tests.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:cndW="clr-namespace:CitnDev.Windows;assembly=CitnDev.Windows_4.0"
+        xmlns:vm="clr-namespace:CitnDev.Windows_Tests.ViewModels"
+        mc:Ignorable="d" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        Title="MainWindow" Height="350" Width="525"
+        d:DataContext="{d:DesignInstance vm:TestViewModel}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal">
+            <Button Content="IsBusy" Margin="10" Command="{Binding SwitchIsBusyCommand}" />
+            <Button Content="HasError" Margin="10" Command="{Binding SwitchHasErrorCommand}" />
+        </StackPanel>
+    <cndW:CnDPanel Grid.Row="1" IsBusy="{Binding IsBusy}" HasError="{Binding HasError}" ErrorMessage="Error Message">
+            <ListBox x:Name="LstTest">
+                <ListBox.Items>
+                    <TextBlock Text="1" />
+                    <TextBlock Text="2" />
+                    <TextBlock Text="3" />
+                    <TextBlock Text="4" />
+                    <TextBlock Text="5" />
+                    <TextBlock Text="6" />
+                    <TextBlock Text="7" />
+                </ListBox.Items>
+            </ListBox>
+        </cndW:CnDPanel>
+    </Grid>
+</Window>

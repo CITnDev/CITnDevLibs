@@ -51,7 +51,9 @@ namespace CitnDev.System_Test.IO
             int i = 0;
             while (i < 50)
             {
+#pragma warning disable 642
                 using (var f = File.Create(testFile)) ;
+#pragma warning restore 642
                 cIO.File.Delete(testFile);
                 if (File.Exists(testFile))
                     Assert.Fail("File not deleted");
