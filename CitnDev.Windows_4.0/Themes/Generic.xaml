@@ -14,19 +14,15 @@
                         <Grid x:Name="PART_Animation" Background="#88888888">
                             <ctrl:LoadingAnimation HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Grid>
-                        <Grid x:Name="PART_Error" Background="#88FF0000">
-                            <Border CornerRadius="5" BorderBrush="DarkBlue" BorderThickness="2">
+                        <Grid x:Name="PART_Notification" Background="#88FFFFFF">
+                            <Border CornerRadius="5" Background="LightGray" BorderBrush="DarkBlue" BorderThickness="2" Margin="50">
                                 <Grid>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
                                         <RowDefinition MinHeight="50"/>
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
-                                    <Grid Background="DarkBlue">
-                                        <TextBlock Text="Error message" Foreground="White" Margin="2" />
-                                    </Grid>
-                                    <TextBlock HorizontalAlignment="Center" Text="{TemplateBinding ErrorMessage}" TextWrapping="Wrap" Grid.Row="1" />
-                                    <Button Content="OK" Grid.Row="2" HorizontalAlignment="Center" Command="{TemplateBinding HideErrorMessageCommand}" />
+                                    <ContentControl HorizontalAlignment="Center" Content="{TemplateBinding Notification}" Grid.Row="0" />
+                                    <Button Content="OK" Grid.Row="1" HorizontalAlignment="Center" Command="{TemplateBinding HideNotificationCommand}" />
                                 </Grid>
                             </Border>
                         </Grid>

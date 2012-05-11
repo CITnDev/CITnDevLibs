@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using Microsoft.Practices.Prism.Commands;
 
 namespace CitnDev.Windows
@@ -39,9 +38,9 @@ namespace CitnDev.Windows
     public class CnDPanel : ContentControl
     {
         private const string ElementAnimationControl = "PART_Animation";
-        private const string ElementErrorControl = "PART_Error";
+        private const string ElementErrorControl = "PART_Notification";
         private UIElement _animationElement;
-        private UIElement _errorElement;
+        private UIElement _errorElement; 
 
 
         static CnDPanel()
@@ -51,10 +50,10 @@ namespace CitnDev.Windows
 
         public CnDPanel()
         {
-            HideErrorMessageCommand = new DelegateCommand(() =>
+            HideNotificationCommand = new DelegateCommand(() =>
             {
-                var be = GetBindingExpression(HasErrorProperty);
-                SetValue(HasErrorProperty, false);
+                var be = GetBindingExpression(HasNotificationProperty);
+                SetValue(HasNotificationProperty, false);
                 if (be != null)
                     be.UpdateSource();
             });
@@ -81,16 +80,13 @@ namespace CitnDev.Windows
 
         #endregion
 
-        #region HasError
+        #region HasNotification
 
-        //public static readonly DependencyProperty HasErrorProperty =
-        //    DependencyProperty.Register("HasError", typeof(bool), typeof(CnDPanel), new PropertyMetadata(default(bool), (o, args) => ((CnDPanel)o).OnHasErrorChanged((bool)args.NewValue)));
-
-        public static readonly DependencyProperty HasErrorProperty =
-            DependencyProperty.Register("HasError", typeof(bool), typeof(CnDPanel), new FrameworkPropertyMetadata(default(bool), FrameworkPropertyMetadataOptions.Journal | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, (o, args) => ((CnDPanel)o).OnHasErrorChanged((bool)args.NewValue)));
+        public static readonly DependencyProperty HasNotificationProperty =
+            DependencyProperty.Register("HasNotification", typeof(bool), typeof(CnDPanel), new FrameworkPropertyMetadata(default(bool), FrameworkPropertyMetadataOptions.Journal | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, (o, args) => ((CnDPanel)o).OnHasNotificationChanged((bool)args.NewValue)));
 
 
-        private void OnHasErrorChanged(bool value)
+        private void OnHasNotificationChanged(bool value)
         {
             if (_errorElement == null)
                 return;
@@ -98,32 +94,32 @@ namespace CitnDev.Windows
             _errorElement.Visibility = value ? Visibility.Visible : Visibility.Hidden;
         }
 
-        public bool HasError
+        public bool HasNotification
         {
-            get { return (bool)GetValue(HasErrorProperty); }
-            set { SetValue(HasErrorProperty, value); }
+            get { return (bool)GetValue(HasNotificationProperty); }
+            set { SetValue(HasNotificationProperty, value); }
         }
 
         #endregion
 
-        public static readonly DependencyProperty HideErrorMessageCommandProperty =
-            DependencyProperty.Register("HideErrorMessageCommand", typeof(DelegateCommand), typeof(CnDPanel), new PropertyMetadata(default(DelegateCommand)));
+        public static readonly DependencyProperty HideNotificationCommandProperty =
+            DependencyProperty.Register("HideNotificationCommand", typeof(DelegateCommand), typeof(CnDPanel), new PropertyMetadata(default(DelegateCommand)));
 
-        public DelegateCommand HideErrorMessageCommand
+        public DelegateCommand HideNotificationCommand
         {
-            get { return (DelegateCommand)GetValue(HideErrorMessageCommandProperty); }
-            set { SetValue(HideErrorMessageCommandProperty, value); }
+            get { return (DelegateCommand)GetValue(HideNotificationCommandProperty); }
+            set { SetValue(HideNotificationCommandProperty, value); }
         }
 
         #region Message
 
-        public static readonly DependencyProperty ErrorMessageProperty =
-            DependencyProperty.Register("ErrorMessage", typeof(string), typeof(CnDPanel), new PropertyMetadata(default(string)));
+        public static readonly DependencyProperty NotificationProperty =
+            DependencyProperty.Register("Notification", typeof(object), typeof(CnDPanel), new PropertyMetadata(default(object)));
 
-        public string ErrorMessage
+        public object Notification
         {
-            get { return (string)GetValue(ErrorMessageProperty); }
-            set { SetValue(ErrorMessageProperty, value); }
+            get { return GetValue(NotificationProperty); }
+            set { SetValue(NotificationProperty, value); }
         }
 
         #endregion
@@ -136,12 +132,12 @@ namespace CitnDev.Windows
             _errorElement = GetTemplateChild(ElementErrorControl) as UIElement;
 
             OnIsBusyChanged(IsBusy);
-            OnHasErrorChanged(HasError);
+            OnHasNotificationChanged(HasNotification);
         }
 
         protected override void OnPreviewKeyDown(System.Windows.Input.KeyEventArgs e)
         {
-            if (IsBusy || HasError)
+            if (IsBusy || HasNotification)
                 e.Handled = true;
             else
                 base.OnPreviewKeyDown(e);
