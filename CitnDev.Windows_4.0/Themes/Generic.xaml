@@ -4,27 +4,51 @@
     xmlns:Windows="clr-namespace:CitnDev.Windows"
     xmlns:ctrl="clr-namespace:CitnDev.Windows.Controls"
     >
+
+    <Style TargetType="{x:Type Windows:CnDPanelNotification}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Windows:CnDPanelNotification}">
+                    <Grid x:Name="PART_Notification" Background="#88FFFFFF">
+                        <Border CornerRadius="5" Background="LightGray" BorderBrush="DarkBlue" BorderThickness="2" Margin="50">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition MinHeight="50"/>
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <ContentControl HorizontalAlignment="Center" Content="{TemplateBinding Notification}" Grid.Row="0" />
+                                <Button x:Name="PART_BTNOK" Content="OK" Grid.Row="1" HorizontalAlignment="Center" />
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
     
+    <Style TargetType="{x:Type Windows:CnDPanelBusy}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Windows:CnDPanelBusy}">
+                    <Grid x:Name="PART_Animation" Background="#88888888">
+                        <ctrl:LoadingAnimation HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type Windows:CnDPanel}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Windows:CnDPanel}">
                     <Grid>
                         <ContentControl Content="{TemplateBinding Content}" />
-                        <Grid x:Name="PART_Animation" Background="#88888888">
-                            <ctrl:LoadingAnimation HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <Grid x:Name="PART_Busy">
+                            <Windows:CnDPanelBusy IsBusy="{TemplateBinding IsBusy}" />
                         </Grid>
-                        <Grid x:Name="PART_Notification" Background="#88FFFFFF">
-                            <Border CornerRadius="5" Background="LightGray" BorderBrush="DarkBlue" BorderThickness="2" Margin="50">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition MinHeight="50"/>
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <ContentControl HorizontalAlignment="Center" Content="{TemplateBinding Notification}" Grid.Row="0" />
-                                    <Button Content="OK" Grid.Row="1" HorizontalAlignment="Center" Command="{TemplateBinding HideNotificationCommand}" />
-                                </Grid>
-                            </Border>
+                        <Grid x:Name="PART_Notification">
+                            <Windows:CnDPanelNotification HasNotification="{Binding HasNotification, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Notification="{TemplateBinding Notification}" />
                         </Grid>
                     </Grid>
                 </ControlTemplate>

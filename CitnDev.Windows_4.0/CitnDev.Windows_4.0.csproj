@@ -69,6 +69,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CnDPanelBusy.cs" />
+    <Compile Include="CnDPanelNotification.cs" />
     <Compile Include="Controls\Block.xaml.cs">
       <DependentUpon>Block.xaml</DependentUpon>
     </Compile>
