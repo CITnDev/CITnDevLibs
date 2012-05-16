@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("CitnDev.Windows_4.0")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("CITnDev : https://github.com/CITnDev/CITnDevLibs")]
 [assembly: AssemblyProduct("CitnDev.Windows_4.0")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]
