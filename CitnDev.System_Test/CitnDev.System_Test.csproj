@@ -42,6 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdvancedTraceTest.cs" />
+    <Compile Include="DumpCollectionTests.cs" />
+    <Compile Include="DumpObjectTests.cs" />
+    <Compile Include="DumpValueTypeTests.cs" />
     <Compile Include="Extensions\ObjectExtensionsTests.cs" />
     <Compile Include="IO\FileTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

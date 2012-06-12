@@ -16,7 +16,7 @@
             <Button Content="IsBusy" Margin="10" Command="{Binding SwitchIsBusyCommand}" />
             <Button Content="HasError" Margin="10" Command="{Binding SwitchHasErrorCommand}" />
         </StackPanel>
-    <cndW:CnDPanel Grid.Row="1" IsBusy="{Binding IsBusy}" HasNotification="{Binding HasError}" Notification="Error Message">
+        <cndW:CnDPanel Grid.Row="1" IsBusy="{Binding IsBusy}" HasNotification="{Binding HasError}" Notification="Error Message">
             <ListBox x:Name="LstTest">
                 <ListBox.Items>
                     <TextBlock Text="1" />

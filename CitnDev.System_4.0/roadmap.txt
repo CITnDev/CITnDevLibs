@@ -9,6 +9,8 @@
 //##########################################################
 
 
+1.0.2.201200612:
+	* DumpObject : new feature
 
 1.0.1.20120228:
 	* AdvancedTrace : fix hot add/remove trace type
