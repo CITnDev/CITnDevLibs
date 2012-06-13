@@ -1,7 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 
-namespace CitnDev.System_Test
+namespace CitnDev.System_Test.DumpObjectTestSuite
 {
     public class DumpObjectTests
     {
@@ -24,11 +24,15 @@ namespace CitnDev.System_Test
             public string PublicProperty { get; set; }
             public decimal? PublicProperty2 { get; set; }
             protected long ProtectedProperty { get; set; }
+// ReSharper disable UnusedAutoPropertyAccessor.Local
             private DateTime PrivateProperty { get; set; }
+// ReSharper restore UnusedAutoPropertyAccessor.Local
 
             public string PublicField;
             protected long ProtectedField;
+// ReSharper disable NotAccessedField.Local
             private DateTime _privateField;
+// ReSharper restore NotAccessedField.Local
         }
 
         public class ObjectWithObjectTest
@@ -47,12 +51,16 @@ namespace CitnDev.System_Test
         [Test]
         public void DumpObjectWithValueTyeTest()
         {
-            var expectedString = "+ " + typeof(ObjectWithValueTypeTest) + Environment.NewLine +
+            var expectedString = "+ Object = " + typeof(ObjectWithValueTypeTest) + Environment.NewLine +
                                  "\t- PublicProperty = publicProp" + Environment.NewLine +
+// ReSharper disable RedundantNameQualifier
                                  "\t- PublicProperty2 = " + CitnDev.System.DumpObject.NullRepresentation;
+// ReSharper restore RedundantNameQualifier
 
             var valueTest = new ObjectWithValueTypeTest();
-            var dumpText = CitnDev.System.DumpObject.Dump(valueTest, 0, "\t");
+// ReSharper disable RedundantNameQualifier
+            var dumpText = CitnDev.System.DumpObject.Dump("Object",valueTest, 0, "\t");
+// ReSharper restore RedundantNameQualifier
 
             Assert.AreEqual(expectedString, dumpText);
         }
@@ -60,7 +68,7 @@ namespace CitnDev.System_Test
         [Test]
         public void DumpObjectWithObjectTest()
         {
-            var expectedString = "+ " + typeof(ObjectWithObjectTest) + Environment.NewLine +
+            var expectedString = "+ Object = " + typeof(ObjectWithObjectTest) + Environment.NewLine +
                                  "\t- PublicProperty = publicProp" + Environment.NewLine +
                                  "\t+ Instance = " + typeof(ObjectWithValueTypeTest) + Environment.NewLine +
                                  "\t\t- PublicProperty = publicProp" + Environment.NewLine +
@@ -68,7 +76,9 @@ namespace CitnDev.System_Test
                                  "\t+ NullValue = <null>";
 
             var valueTest = new ObjectWithObjectTest();
-            var dumpText = CitnDev.System.DumpObject.Dump(valueTest, 0, "\t");
+// ReSharper disable RedundantNameQualifier
+            var dumpText = CitnDev.System.DumpObject.Dump("Object", valueTest, 0, "\t");
+// ReSharper restore RedundantNameQualifier
 
             Assert.AreEqual(expectedString, dumpText);
         }

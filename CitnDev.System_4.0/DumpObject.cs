@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Reflection;
 
 namespace CitnDev.System
@@ -7,74 +11,118 @@ namespace CitnDev.System
     {
         public const string NullRepresentation = "<null>";
 
-        public static void ConsoleDump<T>(T value, string indentString = "\t")
+        public static void ConsoleDump<T>(string name, T value, string indentString = "\t")
         {
-            Console.WriteLine(Dump(value,0, indentString));
+            Console.WriteLine(Dump(name, value, 0, indentString));
         }
 
-        public static string Dump<T>(T value, int indentCount, String indentString)
+        public static string Dump<T>(string name, T value, int indentCount, String indentString)
         {
-            if (indentCount > 100)
-                return string.Empty;
+            return InternalDump(name, typeof(T), value, indentCount, indentString);
+        }
 
-            string dumpText;
+        private static bool CanContinueDumping(int indentCount)
+        {
+            return indentCount < 10;
+        }
+
+        private static string InternalDump(string name, Type valueType, object value, int indentCount, string indentString)
+        {
+            if (!CanContinueDumping(indentCount))
+                return "...";
+
             var indent = string.Empty;
             for (var i = 0; i < indentCount; i++)
                 indent += indentString;
 
-            var type = typeof(T);
-            if (IsValueType(type))
+            if (IsValueType(valueType))
+                return indent + "- " + name + " = " + DumpValueType(value);
+
+            if (CanDirectDumpClass(valueType))
+                return indent + "- " + name + " = " + DumpDirectClass(value);
+
+            if (IsCollectionType(valueType))
+                return indent + "- " + name + " = " + DumpCollection(value, indentCount, indentString);
+
+            return DumpObjectInstance(name, value, indentCount, indentString);
+        }
+
+        private static string DumpCollection(object value, int indentCount, string indentString)
+        {
+            if (value == null)
+                return NullRepresentation;
+
+            var indent = string.Empty;
+            for (var i = 0; i < indentCount; i++)
+                indent += indentString;
+
+            string dumpText;
+
+            if (value.GetType().GetInterface("IDictionary") != null)
             {
-                dumpText = indent + "- " + DumpValueType(value);
-            }
-            else if (type.IsClass)
-            {
-                dumpText = indent + "+ " + value;
-                foreach (var propertyInfo in type.GetProperties())
+                var dict = value as IDictionary;
+                dumpText = "{" + dict.Count + " items}";
+                foreach (var key in dict.Keys)
                 {
-                    if (propertyInfo.CanRead)
-                        dumpText += Environment.NewLine + DumpProperty(propertyInfo, value, indentCount + 1, indentString);
+                    dumpText += Environment.NewLine + InternalDump(key.ToString(), dict[key].GetType(), dict[key], indentCount + 1, indentString);
                 }
+
+                return dumpText;
             }
-            else
-                throw new NotImplementedException("Can't dump type '" + type + "'.");
-            
-            return dumpText;
+
+            if (value.GetType().GetInterface("ICollection") != null)
+            {
+                var col = value as ICollection;
+                dumpText = "{" + col.Count + " items}";
+                var enumerator = col.GetEnumerator();
+                enumerator.Reset();
+                for (var i = 0; i < col.Count; i++)
+                {
+                    enumerator.MoveNext();
+                    var curValue = enumerator.Current;
+                    dumpText += Environment.NewLine + InternalDump("[" + i + "]", curValue.GetType(), curValue, indentCount + 1, indentString);
+                }
+
+                return dumpText;
+            }
+
+            throw new NotImplementedException();
+        }
+
+        private static string DumpDirectClass(object value)
+        {
+            if (value == null)
+                return NullRepresentation;
+
+            if (value.GetType() == typeof(CultureInfo))
+                // ReSharper disable PossibleNullReferenceException
+                return (value as CultureInfo).Name;
+            // ReSharper restore PossibleNullReferenceException
+
+            throw new NotImplementedException();
         }
 
         private static string DumpValueType<T>(T value)
         {
+            // ReSharper disable CompareNonConstrainedGenericWithNull
             if ((typeof(T).IsClass || typeof(T).IsGenericType) && value == null)
+                // ReSharper restore CompareNonConstrainedGenericWithNull
                 return NullRepresentation;
 
             return value.ToString();
         }
 
-        private static string DumpProperty(PropertyInfo property, object instance, int indentCount, string indentString)
-        {
-            var indent = string.Empty;
-            for (var i = 0; i < indentCount; i++)
-                indent += indentString;
-
-            var value = property.GetGetMethod().Invoke(instance, null);
-
-            if (IsValueType(property.PropertyType))
-                return indent + "- " + property.Name + " = " + DumpValueType(value);
-
-            return DumpObjectInstance(property, value, indentCount, indentString);
-        }
-
-        private static string DumpObjectInstance(PropertyInfo property, object value, int indentCount, string indentString)
+        private static string DumpObjectInstance(string name, object value, int indentCount, string indentString)
         {
             var indent = string.Empty;
             for (var i = 0; i < indentCount; i++)
                 indent += indentString;
 
             if (value == null)
-                return indent + "+ " + property.Name + " = " + NullRepresentation;
+                return indent + "+ " + name + " = " + NullRepresentation;
 
-            string dumpText = indent + "+ " + property.Name + " = " + property.PropertyType;
-            foreach (var propertyInfo in property.PropertyType.GetProperties())
+            string dumpText = indent + "+ " + name + " = " + value.GetType();
+            foreach (var propertyInfo in value.GetType().GetProperties())
             {
                 if (propertyInfo.CanRead)
                     dumpText += Environment.NewLine + DumpProperty(propertyInfo, value, indentCount + 1, indentString);
@@ -83,9 +131,28 @@ namespace CitnDev.System
             return dumpText;
         }
 
+        private static string DumpProperty(PropertyInfo property, object instance, int indentCount, string indentString)
+        {
+            var value = property.GetGetMethod().Invoke(instance, null);
+
+            return InternalDump(property.Name, property.PropertyType, value, indentCount, indentString);
+        }
+
         private static bool IsValueType(Type type)
         {
-            return type == typeof (string) || type.IsValueType;
+            return type == typeof(string) || type.IsValueType;
         }
+
+        private static bool IsCollectionType(Type type)
+        {
+            return type.GetInterface("IDictionary") != null ||
+                   type.GetInterface("ICollection") != null;
+        }
+
+        private static bool CanDirectDumpClass(Type type)
+        {
+            return type == typeof(CultureInfo);
+        }
+
     }
 }
