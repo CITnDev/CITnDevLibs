@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("CitnDev.System_4.0")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("CITnDev : https://github.com/CITnDev/CITnDevLibs")]
 [assembly: AssemblyProduct("CitnDev.System_4.0")]
 [assembly: AssemblyCopyright("Copyright ©  2012")]
 [assembly: AssemblyTrademark("")]
@@ -32,5 +32,10 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
+<<<<<<< HEAD
 [assembly: AssemblyVersion("1.1.2.0")]
 [assembly: AssemblyFileVersion("1.1.2.0")]
+=======
+[assembly: AssemblyVersion("1.1.1.0")]
+[assembly: AssemblyFileVersion("1.1.1.0")]
+>>>>>>> 0fd85e805dc307f94ace85b852f90717894cff03

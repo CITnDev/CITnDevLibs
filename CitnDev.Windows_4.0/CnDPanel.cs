@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using Microsoft.Practices.Prism.Commands;
 
 namespace CitnDev.Windows
 {
