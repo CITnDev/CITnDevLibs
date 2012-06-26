@@ -41,6 +41,7 @@
     <Compile Include="DumpObjectTestSuite\DumpCollectionTests.cs" />
     <Compile Include="DumpObjectTestSuite\DumpObjectTests.cs" />
     <Compile Include="DumpObjectTestSuite\DumpValueTypeTests.cs" />
+    <Compile Include="Extensions\EnumerableExtensionsTests.cs" />
     <Compile Include="Extensions\ObjectExtensionsTests.cs" />
     <Compile Include="IO\FileTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

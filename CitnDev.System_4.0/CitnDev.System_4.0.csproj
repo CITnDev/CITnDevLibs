@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="AdvancedTrace.cs" />
     <Compile Include="DumpObject.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="IO\File.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
